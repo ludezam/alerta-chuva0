@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Alerta de Chuva – SJRP</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #0e1621;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+h1 {
+    font-size: 1.8em;
+}
+.status {
+    font-size: 1.6em;
+    margin: 20px 0;
+}
+.box {
+    background: #162235;
+    padding: 15px;
+    border-radius: 12px;
+    max-width: 500px;
+    margin: auto;
+}
+small {
+    opacity: 0.7;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🌧️ Alerta de Chuva</h1>
+<div class="box">
+    <div class="status" id="status">Carregando...</div>
+    <div id="detalhe"></div>
+    <div id="contador" style="margin-top:10px; opacity:0.8;"></div>
+</div>
+
+<br>
+<small>São José do Rio Preto – atualização automática</small>
+
+<script>
+const LAT = -20.8113;
+const LON = -49.3758;
+
+const INTERVALO = 300; // segundos (5 minutos)
+let restante = INTERVALO;
+
+async function atualizar() {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&minutely_15=precipitation_probability,precipitation&timezone=America/Sao_Paulo`;
+
+    try {
+        const r = await fetch(url);
+        const data = await r.json();
+
+        const prob = Math.max(...data.minutely_15.precipitation_probability.slice(0,4));
+        const chuva = Math.max(...data.minutely_15.precipitation.slice(0,4));
+
+        let status = "🟢 Sem chuva";
+        if (prob >= 60 || chuva > 0.3) {
+            status = "🔴 Chuva se aproximando";
+        } else if (prob >= 30) {
+            status = "🟡 Chuva possível";
+        }
+
+        document.getElementById("status").innerText = status;
+        document.getElementById("detalhe").innerHTML =
+            `Probabilidade máx.: <b>${prob}%</b><br>
+             Precipitação: <b>${chuva.toFixed(2)} mm</b>`;
+
+        restante = INTERVALO; // reseta contador após atualizar
+
+    } catch {
+        document.getElementById("status").innerText = "⚠️ Erro ao atualizar";
+    }
+}
+
+function atualizarContador() {
+    const min = Math.floor(restante / 60);
+    const seg = restante % 60;
+
+    document.getElementById("contador").innerText =
+        `🔄 Próxima atualização em ${String(min).padStart(2,"0")}:${String(seg).padStart(2,"0")}`;
+
+    if (restante > 0) restante--;
+}
+
+atualizar();
+setInterval(atualizar, INTERVALO * 1000);
+setInterval(atualizarContador, 1000);
+</script>
+
+
+</body>
+</html>
