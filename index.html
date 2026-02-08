@@ -1,8 +1,10 @@
 <!DOCTYPE html>
+<!-- Build: versão atualizada 1 -->
+
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Alerta de Chuva</title>
+<title>⛈️ Alerta de Chuva</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -79,12 +81,14 @@ small {
   height="350"
   style="border-radius:12px; border:none; margin-top:15px;"
   loading="lazy">
+    <small> Mapa da chuva </small>
 </iframe>
 
-<iframe src="https://www.rainviewer.com/map.html?loc=-20.8615,-49.356,10&oCS=1&c=3&o=83&lm=1&layer=radar&sm=1&sn=1" width="100%" frameborder="0" style="border:0;height:50vh;" allowfullscreen></iframe>
+<iframe src="https://www.rainviewer.com/map.html?loc=-20.8615,-49.356,10&oCS=1&c=3&o=83&lm=1&layer=radar&sm=1&sn=1" width="100%" frameborder="0" style="border:0;height:50vh;" allowfullscreen>
+    mapa RP </iframe>
 
 <br>
-<small>Atualização automática • Desenvolvido por LDZ</small>
+<small> Desenvolvido por LDZ</small>
 
 <script>
 let LAT = -20.8113;
@@ -96,12 +100,6 @@ let restante = INTERVALO;
 function mostrarCidade(nome) {
     document.getElementById("cidadeAtual").innerHTML =
         `📍 Cidade: <b>${nome}</b>`;
-}
-
-function atualizarMapa() {
-    const iframe = document.getElementById("mapa");
-    iframe.src =
-      `https://embed.rainviewer.com/?loc=${LAT},${LON},7&layer=radar&smooth=1&snow=0`;
 }
 
 async function buscarCidade() {
@@ -153,6 +151,12 @@ function usarGPS() {
     }, () => alert("Permissão de localização negada"));
 }
 
+function atualizarMapa() {
+    const iframe = document.getElementById("mapa");
+    iframe.src =
+      `https://embed.rainviewer.com/?loc=${LAT},${LON},7&layer=radar&smooth=1&snow=0`;
+}
+    
 async function atualizar() {
     try {
         const r = await fetch(
@@ -198,3 +202,4 @@ setInterval(atualizarContador, 1000);
 
 </body>
 </html>
+
