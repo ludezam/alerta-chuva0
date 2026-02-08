@@ -36,11 +36,11 @@ button {
 button:hover {
     opacity: 0.9;
 }
-small {
-    opacity: 0.7;
-}
 input {
     font-size: 1em;
+}
+small {
+    opacity: 0.7;
 }
 </style>
 </head>
@@ -48,6 +48,10 @@ input {
 <body>
 
 <h1>🌧️ Alerta de Chuva</h1>
+
+<div id="cidadeAtual" style="margin-bottom:10px; opacity:0.85;">
+    📍 Cidade: <b>São José do Rio Preto</b>
+</div>
 
 <div style="max-width:500px; margin:auto; margin-bottom:15px;">
     <input
@@ -77,6 +81,8 @@ input {
   loading="lazy">
 </iframe>
 
+<iframe src="https://www.rainviewer.com/map.html?loc=-20.8615,-49.356,10&oCS=1&c=3&o=83&lm=1&layer=radar&sm=1&sn=1" width="100%" frameborder="0" style="border:0;height:50vh;" allowfullscreen></iframe>
+
 <br>
 <small>Atualização automática • Desenvolvido por LDZ</small>
 
@@ -86,6 +92,11 @@ let LON = -49.3758;
 
 const INTERVALO = 300; // 5 minutos
 let restante = INTERVALO;
+
+function mostrarCidade(nome) {
+    document.getElementById("cidadeAtual").innerHTML =
+        `📍 Cidade: <b>${nome}</b>`;
+}
 
 function atualizarMapa() {
     const iframe = document.getElementById("mapa");
@@ -105,9 +116,11 @@ async function buscarCidade() {
 
         if (!data.results) return alert("Cidade não encontrada");
 
-        LAT = data.results[0].latitude;
-        LON = data.results[0].longitude;
+        const c = data.results[0];
+        LAT = c.latitude;
+        LON = c.longitude;
 
+        mostrarCidade(`${c.name} ${c.admin1 || ""}`);
         atualizar();
         atualizarMapa();
     } catch {
@@ -120,15 +133,24 @@ function usarGPS() {
         alert("GPS não suportado");
         return;
     }
-    navigator.geolocation.getCurrentPosition(
-        pos => {
-            LAT = pos.coords.latitude;
-            LON = pos.coords.longitude;
-            atualizar();
-            atualizarMapa();
-        },
-        () => alert("Permissão de localização negada")
-    );
+    navigator.geolocation.getCurrentPosition(async pos => {
+        LAT = pos.coords.latitude;
+        LON = pos.coords.longitude;
+
+        try {
+            const r = await fetch(
+              `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${LAT}&longitude=${LON}&language=pt&format=json`
+            );
+            const data = await r.json();
+            if (data.results && data.results.length > 0) {
+                const c = data.results[0];
+                mostrarCidade(`${c.name} ${c.admin1 || ""}`);
+            }
+        } catch {}
+
+        atualizar();
+        atualizarMapa();
+    }, () => alert("Permissão de localização negada"));
 }
 
 async function atualizar() {
@@ -167,6 +189,7 @@ function atualizarContador() {
     if (restante > 0) restante--;
 }
 
+mostrarCidade("São José do Rio Preto");
 atualizar();
 atualizarMapa();
 setInterval(atualizar, INTERVALO * 1000);
