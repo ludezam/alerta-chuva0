@@ -1,81 +1,111 @@
+/* =========================
+   BASE iOS / APP STYLE
+========================= */
+
 body {
-  font-family: Arial, sans-serif;
-  background: #0e1621;
-  color: white;
-  text-align: center;
-  padding: clamp(10px, 2.6vw, 20px);
   margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+  color: white;
+
+  background: radial-gradient(circle at top, #1b3a57 0%, #0b1220 45%, #070b14 100%);
+  min-height: 100vh;
+
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  padding: 14px;
 }
 
-/* ===== CABEÇALHO ===== */
+/* efeito de profundidade geral */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(120, 180, 255, 0.18), transparent 40%),
+    radial-gradient(circle at 80% 30%, rgba(255, 180, 120, 0.12), transparent 50%);
+  pointer-events: none;
+}
+
+/* =========================
+   CABEÇALHO
+========================= */
+
 .topo {
-  width: min(1200px, 100%);
+  width: min(900px, 100%);
+  text-align: center;
   margin-bottom: 10px;
 }
 
 h1 {
-  font-size: clamp(1.5rem, 2.5vw, 2rem);
-  margin: 8px 0 6px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 6px 0;
 }
 
 .subtitulo {
-  opacity: 0.75;
+  opacity: 0.65;
   font-size: 0.95rem;
-  margin: 0 0 10px;
 }
 
-/* ===== RESUMO CLIMA ===== */
+/* =========================
+   RESUMO CLIMA (APPLE STYLE)
+========================= */
+
 .resumo-clima {
-  width: min(1200px, 100%);
-  background: #162235;
-  border-radius: 14px;
-  padding: 14px;
-  margin-bottom: 14px;
-  box-shadow: 0 10px 24px rgba(8, 13, 20, 0.25);
+  width: min(900px, 100%);
+  padding: 18px;
+  margin: 10px 0 14px;
+
+  border-radius: 22px;
+
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .cidade-atual {
   font-size: 0.95rem;
-  opacity: 0.85;
-  margin-bottom: 8px;
+  opacity: 0.75;
+  margin-bottom: 6px;
 }
 
 .temperatura-principal {
-  font-size: 3rem;
-  font-weight: bold;
-  margin: 6px 0;
+  font-size: 64px;
+  font-weight: 200;
+  letter-spacing: -2px;
 }
 
-/* STATUS CHUVA */
+/* STATUS */
 .status {
   display: inline-block;
-  padding: 8px 12px;
+  padding: 6px 12px;
   border-radius: 999px;
-  font-weight: bold;
-  margin: 6px 0;
+  font-size: 0.9rem;
+  margin-top: 6px;
 }
 
 .status-verde {
-  background: rgba(46, 204, 113, 0.2);
-  color: #2ecc71;
+  background: rgba(52, 199, 89, 0.2);
+  color: #34c759;
 }
 
 .status-amarelo {
-  background: rgba(241, 196, 15, 0.2);
-  color: #f1c40f;
+  background: rgba(255, 204, 0, 0.2);
+  color: #ffcc00;
 }
 
 .status-vermelho {
-  background: rgba(231, 76, 60, 0.2);
-  color: #e74c3c;
+  background: rgba(255, 59, 48, 0.2);
+  color: #ff3b30;
 }
 
 .descricao {
-  opacity: 0.8;
-  margin-top: 6px;
+  opacity: 0.75;
+  margin-top: 8px;
 }
 
 /* DADOS RESUMO */
@@ -87,10 +117,11 @@ h1 {
 }
 
 .item-resumo {
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
   padding: 10px;
   font-size: 0.9rem;
+  text-align: center;
 }
 
 .item-resumo strong {
@@ -99,53 +130,72 @@ h1 {
   font-size: 1rem;
 }
 
-/* ===== CONTROLES ===== */
+/* =========================
+   CONTROLES
+========================= */
+
 .controles {
-  width: min(1200px, 100%);
-  margin: 10px 0 14px;
+  width: min(900px, 100%);
   display: grid;
   gap: 10px;
-  grid-template-columns: 1fr;
-  justify-items: center;
-}
-
-#cidade,
-button,
-.btn-ipmet {
-  width: min(100%, 560px);
-  min-height: 46px;
-  padding: 10px 14px;
-  font-size: 1rem;
-  border-radius: 10px;
-  border: none;
+  margin-bottom: 12px;
 }
 
 #cidade {
-  background: #1b2a3d;
+  padding: 12px;
+  border-radius: 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+
   color: white;
   outline: none;
 }
 
+/* BOTÕES iOS */
 button,
 .btn-ipmet {
-  background: linear-gradient(180deg, #2ea0ff 0%, #1e90ff 100%);
+  appearance: none;
+  -webkit-appearance: none;
+
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
   color: white;
+  font-weight: 500;
+
+  border-radius: 14px;
+
+  padding: 12px 14px;
+  min-height: 46px;
+
   cursor: pointer;
-  font-weight: bold;
-  box-shadow: 0 6px 14px rgba(30, 144, 255, 0.25);
-  transition: transform 0.2s ease, opacity 0.2s ease;
+
+  transition: all 0.2s ease;
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
 button:hover,
 .btn-ipmet:hover {
-  opacity: 0.95;
+  background: rgba(255, 255, 255, 0.14);
   transform: translateY(-1px);
 }
 
-/* ===== RADAR ===== */
+button:active,
+.btn-ipmet:active {
+  transform: scale(0.97);
+}
+
+/* =========================
+   RADAR
+========================= */
+
 .radar {
-  width: min(1200px, 100%);
-  margin-top: 10px;
+  width: min(900px, 100%);
 }
 
 .mapa-fixo-container {
@@ -154,24 +204,25 @@ button:hover,
 
 .mapa-fixo {
   width: 100%;
-  height: clamp(300px, 62vh, 760px);
+  height: clamp(300px, 60vh, 700px);
   border: none;
-  border-radius: 14px;
+  border-radius: 18px;
   margin-top: 10px;
-  display: block;
 }
 
 .btn-ipmet {
   display: inline-flex;
-  align-items: center;
   justify-content: center;
   margin-top: 10px;
   text-decoration: none;
 }
 
-/* ===== PREVISÃO ===== */
+/* =========================
+   PREVISÃO
+========================= */
+
 .previsao-12h {
-  width: min(1200px, 100%);
+  width: min(900px, 100%);
   margin-top: 14px;
   text-align: left;
 }
@@ -193,36 +244,50 @@ button:hover,
   }
 }
 
-/* ===== CARDS BASE ===== */
+/* CARD iOS */
 .previsao-card {
-  background: #162235;
-  border-radius: 12px;
-  padding: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  border-radius: 18px;
+
+  padding: 12px;
   min-height: 140px;
+
   display: grid;
-  gap: 4px;
+  gap: 6px;
   justify-items: center;
-  box-shadow: 0 10px 24px rgba(8, 13, 20, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
-.hora { opacity: 0.8; font-size: 0.9rem; }
-.temperatura { font-weight: bold; }
-.chuva { font-size: 0.85rem; opacity: 0.85; }
+.hora {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
 
-/* ===== CORES CONDIÇÃO ===== */
-.previsao-card--chuva-fraca { background: #1e3a52; }
-.previsao-card--chuva-moderada { background: #2a3f2b; }
-.previsao-card--chuva-forte { background: #3a1f25; }
-.previsao-card--sol { background: #2c5d8a; }
-.previsao-card--noite { background: #121a2a; }
-.previsao-card--nublado { background: #3a4652; }
+.icone-clima {
+  font-size: 1.4rem;
+}
 
-/* ===== VENTO ===== */
+.temperatura {
+  font-size: 1.4rem;
+  font-weight: 300;
+}
+
+.chuva {
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+
+/* VENTO */
 .vento-card {
   display: grid;
-  gap: 2px;
   justify-items: center;
+  gap: 2px;
 }
 
 .seta-vento {
@@ -233,12 +298,13 @@ button:hover,
 
 .velocidade-vento {
   font-size: 0.8rem;
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
-/* ===== FOOTER ===== */
+/* FOOTER */
 small {
   display: block;
-  margin-top: 10px;
-  opacity: 0.7;
+  margin-top: 12px;
+  opacity: 0.6;
+  text-align: center;
 }
