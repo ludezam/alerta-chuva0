@@ -1,9 +1,33 @@
 document.addEventListener("DOMContentLoaded", () => {
+let estrelasGeradas = false;
 
 /* =========================
    TEMA AUTOMÁTICO (iOS STYLE)
 ========================= */
+function gerarEstrelas(qtd = 80) {
+  const layer = document.getElementById("stars");
+  layer.innerHTML = "";
 
+  for (let i = 0; i < qtd; i++) {
+    const star = document.createElement("div");
+    star.classList.add("star");
+
+    // posição aleatória
+    star.style.left = Math.random() * 100 + "vw";
+    star.style.top = Math.random() * 100 + "vh";
+
+    // tamanho variável
+    const size = Math.random() * 2 + 1;
+    star.style.width = size + "px";
+    star.style.height = size + "px";
+
+    // velocidade diferente (mais realista)
+    star.style.animationDuration = (1 + Math.random() * 2) + "s";
+
+    layer.appendChild(star);
+  }
+}
+   
 function atualizarCicloSolar() {
   const sun = document.querySelector(".sun");
   const moon = document.querySelector(".moon");
@@ -28,7 +52,13 @@ function atualizarCicloSolar() {
     sun.style.top = y + "vh";
     sun.style.opacity = 1;
 
-    moon.style.opacity = 0;
+    // AQUI entra o brilho do sol
+    sun.style.filter = `brightness(${0.8 + progresso * 0.4})`;
+
+     moon.style.opacity = 0;
+     // ESCONDER ESTRELAS
+     document.getElementById("stars").style.opacity = 0;
+     estrelasGeradas = false;
   }
 
   /* ================= NOITE ================= */
@@ -46,7 +76,17 @@ function atualizarCicloSolar() {
     moon.style.top = y + "vh";
     moon.style.opacity = 1;
 
+    // ✅ AQUI entra a lua mais suave
+    moon.style.opacity = 0.4 + (Math.sin(progresso * Math.PI) * 0.3);
+
     sun.style.opacity = 0;
+
+   // MOSTRAR ESTRELAS
+   if (!estrelasGeradas) {
+     gerarEstrelas(80);
+     estrelasGeradas = true;
+   }
+   document.getElementById("stars").style.opacity = 1;
   }
 }
 
