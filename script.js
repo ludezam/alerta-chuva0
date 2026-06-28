@@ -4,6 +4,55 @@ document.addEventListener("DOMContentLoaded", () => {
    TEMA AUTOMÁTICO (iOS STYLE)
 ========================= */
 
+function atualizarCicloSolar() {
+  const sun = document.querySelector(".sun");
+  const moon = document.querySelector(".moon");
+
+  const agora = new Date();
+  const hora = agora.getHours() + agora.getMinutes() / 60;
+
+  /* ================= DIA =================
+     6h → nasce
+     12h → topo
+     18h → se põe
+  ====================================== */
+
+  if (hora >= 6 && hora <= 18) {
+
+    const progresso = (hora - 6) / 12; // 0 → 1
+
+    const x = 10 + progresso * 80;   // esquerda → direita
+    const y = 70 - Math.sin(progresso * Math.PI) * 60;
+
+    sun.style.left = x + "vw";
+    sun.style.top = y + "vh";
+    sun.style.opacity = 1;
+
+    moon.style.opacity = 0;
+  }
+
+  /* ================= NOITE ================= */
+
+  else {
+
+    // normalizar: 18h → 30h (6h)
+    let h = hora < 6 ? hora + 24 : hora;
+    const progresso = (h - 18) / 12;
+
+    const x = 10 + progresso * 80;
+    const y = 70 - Math.sin(progresso * Math.PI) * 60;
+
+    moon.style.left = x + "vw";
+    moon.style.top = y + "vh";
+    moon.style.opacity = 1;
+
+    sun.style.opacity = 0;
+  }
+}
+
+atualizarCicloSolar();
+setInterval(atualizarCicloSolar, 60000); // atualiza a cada 1 min
+   
 function setThemeByTime() {
   const hour = new Date().getHours();
 
