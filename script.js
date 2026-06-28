@@ -1,8 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-let LAT = -20.81;
-let LON = -49.37;
- 
 let estadoAtual = {
   intensidade: 0,
   prob: 0,
@@ -10,6 +7,38 @@ let estadoAtual = {
 };
 
 let estrelasGeradas = false;
+
+/* ================= PEGAR LOCAL AUTOMÁTICO ================= */
+function initLocalizacao() {
+
+  if (!navigator.geolocation) {
+    atualizar(); // fallback
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      LAT = pos.coords.latitude;
+      LON = pos.coords.longitude;
+
+      document.getElementById("cidadeAtual").textContent = "Local atual";
+
+      atualizar();
+    },
+    err => {
+      console.warn("GPS negado ou indisponível");
+
+      document.getElementById("cidadeAtual").textContent = "Local padrão";
+
+      atualizar(); // usa padrão
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 8000,
+      maximumAge: 300000
+    }
+  );
+}
 
 /* ================= SOL / LUA ================= */
 function atualizarCicloSolar() {
@@ -79,6 +108,7 @@ function startRain(i=60){
     r.appendChild(d);
   }
 }
+
 function stopRain(){
   document.getElementById("rain").innerHTML="";
 }
@@ -87,7 +117,7 @@ function stopRain(){
 async function atualizar(){
 
   const resp = await fetch(
-    `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&hourly=temperature_2m,precipitation_probability,precipitation&current=temperature_2m,apparent_temperature,precipitation,precipitation_probability,wind_speed_10m,relative_humidity_2m`
+    `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&hourly=temperature_2m,precipitation_probability,precipitation&current=temperature_2m,apparent_temperature,precipitation,precipitation_probability,wind_speed_10m,relative_humidity_2m&timezone=auto`
   );
 
   const d = await resp.json();
@@ -183,12 +213,12 @@ el("btnBuscar").onclick=buscarCidade;
 el("btnGPS").onclick=gps;
 el("btnRefresh").onclick=atualizar;
 
-/* ================= LOOP ================= */
+/* ================= LOOPS ================= */
 setInterval(atualizar,300000);
 setInterval(atualizarCicloSolar,60000);
 
-/* INIT */
-atualizar();
+/* ================= INIT ================= */
+initLocalizacao(); // ✅ AGORA COMEÇA PELO GPS
 atualizarCicloSolar();
 
 });
