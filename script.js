@@ -221,4 +221,33 @@ setInterval(atualizarCicloSolar,60000);
 initLocalizacao(); // ✅ AGORA COMEÇA PELO GPS
 atualizarCicloSolar();
 
+function renderizar12h(h) {
+  const elPrev = document.getElementById("previsao12h");
+
+  if (!h || !h.time) return;
+
+  const agora = new Date();
+
+  let startIndex = h.time.findIndex(t => new Date(t) > agora);
+
+  // ✅ CORREÇÃO PRINCIPAL
+  if (startIndex === -1) startIndex = 0;
+
+  const dados = h.time.slice(startIndex, startIndex + 12);
+
+  elPrev.innerHTML = dados.map((t, idx) => {
+    const temp = h.temperature_2m[startIndex + idx];
+    const prob = h.precipitation_probability[startIndex + idx];
+
+    return `
+      <div class="previsao-card">
+        <div class="hora">${t.slice(11,16)}</div>
+        <div>🌤️</div>
+        <div class="temp">${Math.round(temp)}°</div>
+        <div>${prob}% chuva</div>
+      </div>
+    `;
+  }).join("");
+}
+  
 });
