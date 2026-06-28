@@ -1,1 +1,244 @@
-test
+body {
+  font-family: Arial, sans-serif;
+  background: #0e1621;
+  color: white;
+  text-align: center;
+  padding: clamp(10px, 2.6vw, 20px);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ===== CABEÇALHO ===== */
+.topo {
+  width: min(1200px, 100%);
+  margin-bottom: 10px;
+}
+
+h1 {
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  margin: 8px 0 6px;
+}
+
+.subtitulo {
+  opacity: 0.75;
+  font-size: 0.95rem;
+  margin: 0 0 10px;
+}
+
+/* ===== RESUMO CLIMA ===== */
+.resumo-clima {
+  width: min(1200px, 100%);
+  background: #162235;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 14px;
+  box-shadow: 0 10px 24px rgba(8, 13, 20, 0.25);
+}
+
+.cidade-atual {
+  font-size: 0.95rem;
+  opacity: 0.85;
+  margin-bottom: 8px;
+}
+
+.temperatura-principal {
+  font-size: 3rem;
+  font-weight: bold;
+  margin: 6px 0;
+}
+
+/* STATUS CHUVA */
+.status {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: bold;
+  margin: 6px 0;
+}
+
+.status-verde {
+  background: rgba(46, 204, 113, 0.2);
+  color: #2ecc71;
+}
+
+.status-amarelo {
+  background: rgba(241, 196, 15, 0.2);
+  color: #f1c40f;
+}
+
+.status-vermelho {
+  background: rgba(231, 76, 60, 0.2);
+  color: #e74c3c;
+}
+
+.descricao {
+  opacity: 0.8;
+  margin-top: 6px;
+}
+
+/* DADOS RESUMO */
+.dados-resumo {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.item-resumo {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 0.9rem;
+}
+
+.item-resumo strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 1rem;
+}
+
+/* ===== CONTROLES ===== */
+.controles {
+  width: min(1200px, 100%);
+  margin: 10px 0 14px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr;
+  justify-items: center;
+}
+
+#cidade,
+button,
+.btn-ipmet {
+  width: min(100%, 560px);
+  min-height: 46px;
+  padding: 10px 14px;
+  font-size: 1rem;
+  border-radius: 10px;
+  border: none;
+}
+
+#cidade {
+  background: #1b2a3d;
+  color: white;
+  outline: none;
+}
+
+button,
+.btn-ipmet {
+  background: linear-gradient(180deg, #2ea0ff 0%, #1e90ff 100%);
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 6px 14px rgba(30, 144, 255, 0.25);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+button:hover,
+.btn-ipmet:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
+/* ===== RADAR ===== */
+.radar {
+  width: min(1200px, 100%);
+  margin-top: 10px;
+}
+
+.mapa-fixo-container {
+  width: 100%;
+}
+
+.mapa-fixo {
+  width: 100%;
+  height: clamp(300px, 62vh, 760px);
+  border: none;
+  border-radius: 14px;
+  margin-top: 10px;
+  display: block;
+}
+
+.btn-ipmet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  text-decoration: none;
+}
+
+/* ===== PREVISÃO ===== */
+.previsao-12h {
+  width: min(1200px, 100%);
+  margin-top: 14px;
+  text-align: left;
+}
+
+.previsao-12h h2 {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.previsao-scroll {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+@media (min-width: 560px) {
+  .previsao-scroll {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
+
+/* ===== CARDS BASE ===== */
+.previsao-card {
+  background: #162235;
+  border-radius: 12px;
+  padding: 10px;
+  min-height: 140px;
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  box-shadow: 0 10px 24px rgba(8, 13, 20, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.hora { opacity: 0.8; font-size: 0.9rem; }
+.temperatura { font-weight: bold; }
+.chuva { font-size: 0.85rem; opacity: 0.85; }
+
+/* ===== CORES CONDIÇÃO ===== */
+.previsao-card--chuva-fraca { background: #1e3a52; }
+.previsao-card--chuva-moderada { background: #2a3f2b; }
+.previsao-card--chuva-forte { background: #3a1f25; }
+.previsao-card--sol { background: #2c5d8a; }
+.previsao-card--noite { background: #121a2a; }
+.previsao-card--nublado { background: #3a4652; }
+
+/* ===== VENTO ===== */
+.vento-card {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+}
+
+.seta-vento {
+  font-size: 1.3rem;
+  transform: rotate(var(--direcao-vento));
+  color: #9fd0ff;
+}
+
+.velocidade-vento {
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+/* ===== FOOTER ===== */
+small {
+  display: block;
+  margin-top: 10px;
+  opacity: 0.7;
+}
