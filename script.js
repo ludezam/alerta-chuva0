@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 let LAT = -20.81;
 let LON = -49.37;
-
+ 
 let estadoAtual = {
   intensidade: 0,
   prob: 0,
