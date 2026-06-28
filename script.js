@@ -1,166 +1,233 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-/* ================= TEMA ================= */
+/* =========================
+   TEMA AUTOMÁTICO (iOS STYLE)
+========================= */
+
 function setThemeByTime() {
-  const h = new Date().getHours();
-  document.body.className =
-    h < 12 ? "day" :
-    h < 18 ? "afternoon" : "night";
+  const hour = new Date().getHours();
+
+  document.body.classList.remove("day", "afternoon", "night");
+
+  if (hour >= 6 && hour < 12) {
+    document.body.classList.add("day");
+  } else if (hour >= 12 && hour < 18) {
+    document.body.classList.add("afternoon");
+  } else {
+    document.body.classList.add("night");
+  }
 }
+
 setThemeByTime();
 setInterval(setThemeByTime, 60000);
 
-/* ================= CHUVA ================= */
+/* =========================
+   CHUVA DINÂMICA
+========================= */
+
 function startRain(intensity = 60) {
   const rain = document.getElementById("rain");
   rain.innerHTML = "";
 
   for (let i = 0; i < intensity; i++) {
-    const d = document.createElement("div");
-    d.className = "drop";
-    d.style.left = Math.random() * 100 + "vw";
-    d.style.animationDuration = (0.4 + Math.random()) + "s";
-    d.style.opacity = Math.random();
-    rain.appendChild(d);
+    const drop = document.createElement("div");
+    drop.classList.add("drop");
+
+    drop.style.left = Math.random() * 100 + "vw";
+    drop.style.animationDuration = (0.4 + Math.random()) + "s";
+    drop.style.opacity = Math.random();
+
+    rain.appendChild(drop);
   }
 }
+
 function stopRain() {
   document.getElementById("rain").innerHTML = "";
 }
 
-/* ================= CONFIG ================= */
-let LAT = -20.8113;
-let LON = -49.3758;
-let ultimoStatus = "";
+  // ================= CONFIGURAÇÃO =================
+  let LAT = -20.8113;
+  let LON = -49.3758;
+  let nomeCidadeAtual = "São José do Rio Preto-SP";
 
-/* ELEMENTOS */
-const el = id => document.getElementById(id);
+  // ================= ELEMENTOS =================
+  const mapaRadarEl = document.getElementById("mapaRadar");
 
-/* ================= STATUS INTELIGENTE ================= */
-function statusChuva(prob, precip) {
-  if (precip > 4) return ["🔴 Chuva forte agora", "status-vermelho"];
-  if (prob > 70) return ["🟡 Chuva chegando", "status-amarelo"];
-  if (prob > 40) return ["🟡 Possibilidade de chuva", "status-amarelo"];
-  return ["🟢 Tempo firme", "status-verde"];
-}
+  const cidadeInput = document.getElementById("cidade");
+  const btnBuscar = document.getElementById("btnBuscar");
+  const btnGPS = document.getElementById("btnGPS");
+  const btnRefresh = document.getElementById("btnRefresh");
 
-/* ================= PREVISÃO FUTURA ================= */
-function preverChuva(hourly) {
-  for (let i = 0; i < 6; i++) {
-    if (hourly.precipitation_probability[i] > 60)
-      return `🌧️ Chuva em ${i + 1}h`;
+  const previsao12hEl = document.getElementById("previsao12h");
+
+  // ⚠️ NOVO: elementos do resumo (faltavam no seu script)
+  const cidadeAtualEl = document.getElementById("cidadeAtual");
+  const tempAtualEl = document.getElementById("tempAtual");
+  const sensacaoEl = document.getElementById("sensacaoAtual");
+  const umidadeEl = document.getElementById("umidadeAtual");
+  const ventoEl = document.getElementById("ventoAtual");
+  const statusEl = document.getElementById("statusChuva");
+  const descricaoEl = document.getElementById("descricaoAtual");
+
+  // ================= EVENTOS =================
+  btnBuscar.addEventListener("click", buscarCidade);
+  btnGPS.addEventListener("click", usarGPS);
+  btnRefresh.addEventListener("click", atualizarTudo);
+
+  // ================= UTIL =================
+  const UF_POR_ESTADO = {
+    "São Paulo": "SP",
+    "Rio de Janeiro": "RJ",
+    "Minas Gerais": "MG",
+    "Paraná": "PR",
+    "Bahia": "BA",
+    "Rio Grande do Sul": "RS",
+    "Santa Catarina": "SC"
+  };
+
+  function mostrarCidade(nome) {
+    nomeCidadeAtual = nome;
+    if (cidadeAtualEl) cidadeAtualEl.textContent = nome;
   }
-  return "Sem chuva nas próximas horas";
-}
 
-/* ================= ATUALIZAR UI ================= */
-function atualizarAgora(d) {
+  function atualizarMapa(nomeCidade = nomeCidadeAtual) {
+    if (!mapaRadarEl) return;
 
-  el("tempAtual").textContent = Math.round(d.temperature_2m) + "°";
-  el("sensacaoAtual").textContent = Math.round(d.apparent_temperature) + "°";
-  el("umidadeAtual").textContent = d.relative_humidity_2m + "%";
-  el("ventoAtual").textContent = Math.round(d.wind_speed_10m) + " km/h";
-
-  const [txt, cls] = statusChuva(d.precipitation_probability, d.precipitation);
-
-  el("statusChuva").textContent = txt;
-  el("statusChuva").className = "status " + cls;
-
-  /* ALERTA */
-  if (txt !== ultimoStatus) {
-    ultimoStatus = txt;
-    if (cls === "status-vermelho") alert("🌧️ Chuva forte iniciando!");
+    mapaRadarEl.src = `https://www.rainviewer.com/map.html?loc=${LAT},${LON},10&oCS=1&c=3&o=83&lm=1&layer=radar&sm=1&sn=1`;
+    mapaRadarEl.title = `Radar de ${nomeCidade}`;
   }
 
-  /* CHUVA VISUAL */
-  const intensidade = Math.min(
-    Math.round(d.precipitation * 120 + d.precipitation_probability),
-    120
-  );
+  function statusChuva(prob, precip) {
+    const risco = (prob || 0) + (precip || 0) * 10;
 
-  intensidade > 15 ? startRain(intensidade) : stopRain();
-}
+    if (risco > 80) return { texto: "🔴 Chuvas fortes", classe: "status-vermelho" };
+    if (risco > 40) return { texto: "🟡 Possibilidade de chuva", classe: "status-amarelo" };
+    return { texto: "🟢 Pode sair tranquilo", classe: "status-verde" };
+  }
 
-/* ================= PREVISÃO GRID ================= */
-function renderizar12h(h) {
-  const now = new Date();
+  function atualizarResumoAgora(dados) {
+    if (!dados) return;
 
-  const i = h.time.findIndex(t => new Date(t) > now);
+    const temp = dados.temperature_2m ?? "--";
+    const wind = dados.wind_speed_10m ?? "--";
+    const humidity = dados.relative_humidity_2m ?? "--";
+    const feels = dados.apparent_temperature ?? temp;
 
-  const dados = h.time.slice(i, i + 12);
+    if (tempAtualEl) tempAtualEl.textContent = `${Math.round(temp)}°`;
+    if (sensacaoEl) sensacaoEl.textContent = `${Math.round(feels)}°`;
+    if (umidadeEl) umidadeEl.textContent = `${humidity}%`;
+    if (ventoEl) ventoEl.textContent = `${Math.round(wind)} km/h`;
 
-  el("previsao12h").innerHTML = dados.map((t, idx) => `
-    <div class="previsao-card">
-      <div class="hora">${t.slice(11,16)}</div>
-      <div>🌤️</div>
-      <div>${Math.round(h.temperature_2m[i+idx])}°</div>
-      <div>${h.precipitation_probability[i+idx]}%</div>
-    </div>
-  `).join("");
-}
+    const st = statusChuva(dados.precipitation_probability, dados.precipitation);
+    if (statusEl) {
+      statusEl.textContent = st.texto;
+      statusEl.className = `status ${st.classe}`;
+    }
 
-/* ================= API ================= */
-async function atualizar() {
-  const r = await fetch(
-    `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&hourly=temperature_2m,precipitation_probability,precipitation&current=temperature_2m,apparent_temperature,precipitation,precipitation_probability,wind_speed_10m,relative_humidity_2m&timezone=auto`
-  );
+    if (descricaoEl) {
+      descricaoEl.textContent =
+        dados.precipitation_probability > 40
+          ? "Possibilidade de chuva nas próximas horas."
+          : "Sem previsão de chuva imediata.";
+    }
+  }
 
-  const d = await r.json();
+  // ================= PREVISÃO =================
+  function renderizarPrevisao12h(hourly, timezone) {
+    if (!previsao12hEl || !hourly?.time) return;
 
-  atualizarAgora(d.current);
-  renderizar12h(d.hourly);
+    const agora = new Date();
 
-  el("descricaoAtual").textContent = preverChuva(d.hourly);
-}
+    const indice = hourly.time.findIndex(t => new Date(t) > agora);
+    const start = Math.max(indice, 0);
 
-/* ================= MAPA ================= */
-function atualizarMapa() {
-  el("mapaRadar").src =
-    `https://www.rainviewer.com/map.html?loc=${LAT},${LON},10&layer=radar`;
-}
+    const dados = hourly.time.slice(start, start + 12).map((time, i) => ({
+      time,
+      temp: hourly.temperature_2m[start + i],
+      precip: hourly.precipitation[start + i],
+      prob: hourly.precipitation_probability[start + i],
+      windSpeed: hourly.wind_speed_10m[start + i],
+      windDirection: hourly.wind_direction_10m[start + i]
+    }));
 
-/* ================= BUSCA ================= */
-async function buscarCidade() {
-  const nome = el("cidade").value;
+    previsao12hEl.innerHTML = dados.map(item => {
 
-  const r = await fetch(
-    `https://geocoding-api.open-meteo.com/v1/search?name=${nome}&count=1`
-  );
+      const hora = item.time.slice(11, 16);
 
-  const d = await r.json();
+      return `
+        <article class="previsao-card">
+          <div class="hora">${hora}</div>
+          <div class="icone-clima">🌤️</div>
+          <div class="temperatura">${Math.round(item.temp)}°C</div>
+          <div class="chuva">${item.prob}% · ${item.precip.toFixed(1)} mm</div>
 
-  if (!d.results?.length) return;
+          <div class="vento-card">
+            <span class="seta-vento" style="--direcao-vento:${item.windDirection || 0}deg">↑</span>
+            <span class="velocidade-vento">${Math.round(item.windSpeed)} km/h</span>
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
 
-  LAT = d.results[0].latitude;
-  LON = d.results[0].longitude;
+  // ================= API =================
+  async function atualizarPrevisao() {
+    try {
+      const r = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&hourly=precipitation_probability,precipitation,temperature_2m,wind_speed_10m,wind_direction_10m&current=temperature_2m,apparent_temperature,precipitation,precipitation_probability,wind_speed_10m,relative_humidity_2m&timezone=auto`
+      );
 
-  el("cidadeAtual").textContent = d.results[0].name;
+      const data = await r.json();
 
-  atualizarMapa();
-  atualizar();
-}
+      if (data.current) atualizarResumoAgora(data.current);
+      renderizarPrevisao12h(data.hourly, data.timezone);
 
-/* ================= GPS ================= */
-function gps() {
-  navigator.geolocation.getCurrentPosition(p => {
-    LAT = p.coords.latitude;
-    LON = p.coords.longitude;
-    el("cidadeAtual").textContent = "Local atual";
+    } catch (e) {
+      console.error("Erro previsão:", e);
+    }
+  }
+
+  async function atualizarTudo() {
+    await atualizarPrevisao();
+  }
+
+  // ================= BUSCA =================
+  async function buscarCidade() {
+    const nome = cidadeInput.value.trim();
+    if (!nome) return;
+
+    const r = await fetch(
+      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(nome)}&count=1&language=pt`
+    );
+
+    const data = await r.json();
+    if (!data.results?.length) return;
+
+    LAT = data.results[0].latitude;
+    LON = data.results[0].longitude;
+
+    mostrarCidade(`${data.results[0].name}-${data.results[0].country_code}`);
     atualizarMapa();
-    atualizar();
-  });
-}
+    atualizarTudo();
+  }
 
-/* ================= EVENTOS ================= */
-el("btnBuscar").onclick = buscarCidade;
-el("btnGPS").onclick = gps;
-el("btnRefresh").onclick = atualizar;
+  // ================= GPS =================
+  function usarGPS() {
+    navigator.geolocation.getCurrentPosition(async pos => {
 
-/* AUTO UPDATE */
-setInterval(atualizar, 300000);
+      LAT = pos.coords.latitude;
+      LON = pos.coords.longitude;
 
-/* INIT */
-atualizarMapa();
-atualizar();
+      mostrarCidade("Local atual");
+      atualizarMapa();
+      atualizarTudo();
+
+    });
+  }
+
+  // ================= INIT =================
+  mostrarCidade(nomeCidadeAtual);
+  atualizarMapa();
+  atualizarTudo();
 
 });
