@@ -18,8 +18,8 @@ body {
 
 .sun, .moon {
   position: fixed;
-  width: 140px;
-  height: 140px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   transition: all 1s linear;
   z-index: 0;
@@ -82,7 +82,7 @@ body {
 /* ================= CONTAINER ================= */
 
 section, header {
-  width: min(900px, 100%);
+  width: min(850px, 100%);
   z-index: 1;
 }
 
@@ -227,7 +227,7 @@ button:hover {
   align-items: center;
   justify-content: center;
 
-  width: 120px;
+  width: 250px;
   min-height: 36px;
 
   padding: 12px;
